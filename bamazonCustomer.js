@@ -33,6 +33,34 @@ connection.connect(function (_err) {
 });
 
 function runStore() {
+   
+    displayInventoryThenDoAction(askUserWhatToBuy);
+}
+function displayInventoryThenDoAction(_callback) {
+     // display items
+     var dispItemsQS = "SELECT * FROM products";
+
+     connection.query(dispItemsQS, function (_err, _res) {
+ 
+         if (_err) throw _err;
+ 
+         // display all the items the user can purchase
+         console.log("\n-----------------------------------------------");
+         for (var i = 0; i < _res.length; ++i) {
+ 
+             console.log("item ID:\t\t" + _res[i].item_id);
+             console.log("product name:\t\t" + _res[i].product_name);
+             console.log("department name:\t" + _res[i].department_name);
+             console.log("product price:\t\t$" + _res[i].price);
+             console.log("product quantity:\t" + _res[i].stock_quantity);
+             console.log("-----------------------------------------------");
+         }
+ 
+         // do something after the inventory is displayed
+         _callback();
+     });
+}
+function displayInventory() {
     // display items
     var dispItemsQS = "SELECT * FROM products";
 
@@ -44,7 +72,7 @@ function runStore() {
         console.log("\n-----------------------------------------------");
         for (var i = 0; i < _res.length; ++i) {
 
-            console.log("item ID:\t\t" + _res[i].item_id);
+            console.log("item ID:\t\t" + _res[i].item_id);14
             console.log("product name:\t\t" + _res[i].product_name);
             console.log("department name:\t" + _res[i].department_name);
             console.log("product price:\t\t$" + _res[i].price);
@@ -52,21 +80,18 @@ function runStore() {
             console.log("-----------------------------------------------");
         }
 
-        // display any messages from previous inputs
-        displayMessages();
-
-        // ask user for input
-        askUserWhatToBuy();
     });
 }
-
 function askUserWhatToBuy() {
 
+     // display any messages from previous inputs
+    displayMessages();
+    
     var userQ = [
         // The first should ask them the ID of the product they would like to buy.
         {
             type: "input",
-            message: "Please enter in the ID of the item you wish to purchase",
+            message: "*******************************************************\nPlease enter in the ID of the item you wish to purchase",
             name: "itemID"
         },
         // The second message should ask how many units of the product they would like to buy.
@@ -121,9 +146,18 @@ function addMessage(_str) {
     messages.push(_str);
 }
 function displayMessages() {
+
+    if (messages.length === 0)
+        return;
+    console.log("\n***********************************************");
+    console.log("\n-----------------------------------------------");
+         
     for (var i = 0; i < messages.length; ++i){
         console.log(messages[i]);
     }
+    console.log("\n-----------------------------------------------");
+    console.log("\n***********************************************");
+        
     while (messages.length != 0) {
         messages.pop();
     }
@@ -143,7 +177,7 @@ function removeItem(_id) {
         }
 
         //console.log(`item ${_id} removed!`);
-        addMessage(`item ${_id} is out of stock, it has been removed!`);
+        addMessage(`item ${_id} is now out of stock, it has been removed!`);
     });
 }
 
